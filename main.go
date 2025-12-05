@@ -11,6 +11,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/line/line-bot-sdk-go/v8/linebot/messaging_api"
 	"github.com/line/line-bot-sdk-go/v8/linebot/webhook"
+
+	"mltd-linebot-border-go/handlers"
 )
 
 func init() {
@@ -59,12 +61,13 @@ func main() {
 		}
 
 		for _, event := range events.Events {
-			// 事件類型
+			// event type
 			switch e := event.(type) {
 			case webhook.MessageEvent:
 				switch message := e.Message.(type) {
 				case webhook.TextMessageContent:
 					// text message event
+					go handlers.TextMessageHandler(bot, e, message)
 				}
 			}
 		}
