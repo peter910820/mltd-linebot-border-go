@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"regexp"
 	"time"
 
 	"mltd-linebot-border-go/common"
 )
 
+// events struct
 type (
 	Event struct {
 		ID         int      `json:"id"`
@@ -36,10 +36,21 @@ type (
 	}
 )
 
+// rankings struct
+type (
+	ScoreData struct {
+		Score        int       `json:"score"`
+		AggregatedAt time.Time `json:"aggregatedAt"`
+	}
+
+	RankEntry struct {
+		Rank int         `json:"rank"`
+		Data []ScoreData `json:"data"`
+	}
+)
+
 var (
-	apiUrl      = "https://api.matsurihi.me/api/mltd/v2/events/"
-	reEvent     = regexp.MustCompile(`^event-[a-z]{2}$`)
-	reEventRank = regexp.MustCompile(`^event-[a-z]{2}-[0-9]*$`)
+	apiUrl = "https://api.matsurihi.me/api/mltd/v2/events/"
 )
 
 func GetEvents() ([]Event, error) {
@@ -55,6 +66,20 @@ func GetEvents() ([]Event, error) {
 		return events, err
 	}
 	return events, nil
+}
+
+func GetRankings(eventID int, logType string, rankFormat string) ([]RankEntry, error) {
+	var rankings []RankEntry
+	req, err := sendGetRequest(fmt.Sprintf("%s%d/rankings/%s/logs/%s", apiUrl, eventID, logType, rankFormat))
+	if err != nil {
+		return rankings, err
+	}
+
+	err = json.Unmarshal(req, &rankings)
+	if err != nil {
+		return rankings, err
+	}
+	return rankings, nil
 }
 
 func sendGetRequest(url string) ([]byte, error) {
