@@ -29,14 +29,14 @@ var (
 func TextMessageHandler(bot *messaging_api.MessagingApiAPI, e webhook.MessageEvent, message webhook.TextMessageContent) {
 	// rank
 	if reEventRank.MatchString(message.Text) {
-		returnMsg, err := mltdBorder(message, true)
+		returnMsg, err := mltdBorder(message, false)
 		if err != nil {
 			postError(bot, e, err)
 			return
 		}
 		postMessage(bot, e, returnMsg)
 	} else if reEvent.MatchString(message.Text) { // default
-		returnMsg, err := mltdBorder(message, false)
+		returnMsg, err := mltdBorder(message, true)
 		if err != nil {
 			postError(bot, e, err)
 			return
