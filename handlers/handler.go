@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -16,8 +17,8 @@ import (
 var (
 	timeFormat = "2006-01-02 15:04:05"
 
-	reEvent     = regexp.MustCompile(`^event-[a-z]{2}$`)
-	reEventRank = regexp.MustCompile(`^event-[a-z]{2}-[0-9]*$`)
+	reEvent     = regexp.MustCompile(`(?i)^event-[a-z]{2}$`)
+	reEventRank = regexp.MustCompile(`(?i)^event-[a-z]{2}-[0-9]*$`)
 
 	defaultFormat = map[string]string{
 		"eventPoint":  "1,2,3,100,2500,5000,10000,25000,50000,100000",
@@ -41,6 +42,9 @@ func TextMessageHandler(bot *messaging_api.MessagingApiAPI, e webhook.MessageEve
 			postError(bot, e, err)
 			return
 		}
+		postMessage(bot, e, returnMsg)
+	} else if strings.Contains(message.Text, "help") {
+		returnMsg := "詳細指令請參考https://github.com/peter910820/mltd-linebot-border-go"
 		postMessage(bot, e, returnMsg)
 	}
 
@@ -79,12 +83,12 @@ func mltdBorder(message webhook.TextMessageContent, defaultMark bool) (string, e
 		return "", err
 	}
 
-	output := fmt.Sprintf("%s\n開始時間: %s\n結束時間: %s\n(名次/分數/半小時增加量)\n",
+	output := fmt.Sprintf("%s\n開始時間: %s\n結束時間: %s\n(名次/分數/半小時增加量)\n\n",
 		events[len(events)-1].Name,
 		events[len(events)-1].Schedule.BeginAt.Format(timeFormat),
 		events[len(events)-1].Schedule.EndAt.Format(timeFormat))
 
-	rankingsData := make([]string, len(rankings))
+	rankingsData := make([]string, 0, len(rankings))
 	for _, ranking := range rankings {
 		dataLen := len(ranking.Data)
 		prefixEmoji := "🔴"
@@ -132,12 +136,16 @@ func postMessage(bot *messaging_api.MessagingApiAPI, e webhook.MessageEvent, msg
 
 func postError(bot *messaging_api.MessagingApiAPI, e webhook.MessageEvent, err error) {
 	logrus.Error(err)
+	replyErrMsg := "目前發生錯誤，請稍後再試"
+	if errors.Is(err, common.ErrMLTDLogTypeAbnormal) {
+		replyErrMsg = "參數錯誤，目前僅支援pt hs lp三種"
+	}
 	_, err = bot.ReplyMessage(
 		&messaging_api.ReplyMessageRequest{
 			ReplyToken: e.ReplyToken,
 			Messages: []messaging_api.MessageInterface{
 				messaging_api.TextMessage{
-					Text: "目前發生錯誤，請稍後再試",
+					Text: replyErrMsg,
 				},
 			},
 		},
