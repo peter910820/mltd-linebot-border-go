@@ -18,7 +18,7 @@ var (
 	timeFormat = "2006-01-02 15:04:05"
 
 	reEvent     = regexp.MustCompile(`(?i)^event-[a-z]{2}$`)
-	reEventRank = regexp.MustCompile(`(?i)^event-[a-z]{2}-[0-9]*$`)
+	reEventRank = regexp.MustCompile(`(?i)^event-[a-z]{2}-[0-9]+$`)
 
 	defaultFormat = map[string]string{
 		"eventPoint":  "1,2,3,100,2500,5000,10000,25000,50000,100000",
