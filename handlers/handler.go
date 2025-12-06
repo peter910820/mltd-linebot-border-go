@@ -43,7 +43,7 @@ func TextMessageHandler(bot *messaging_api.MessagingApiAPI, e webhook.MessageEve
 			return
 		}
 		postMessage(bot, e, returnMsg)
-	} else if strings.Contains(message.Text, "help") {
+	} else if strings.Contains(strings.ToLower(message.Text), "help") {
 		returnMsg := "詳細指令請參考https://github.com/peter910820/mltd-linebot-border-go"
 		postMessage(bot, e, returnMsg)
 	}
