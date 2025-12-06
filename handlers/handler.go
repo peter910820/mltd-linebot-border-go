@@ -100,13 +100,13 @@ func mltdBorder(message webhook.TextMessageContent, defaultMark bool) (string, e
 			rankingsData = append(rankingsData, fmt.Sprintf("%s%d位:  %dpt(+%d)",
 				prefixEmoji,
 				ranking.Rank,
-				ranking.Data[dataLen].Score,
-				ranking.Data[dataLen].Score-ranking.Data[dataLen-1].Score))
+				ranking.Data[dataLen-1].Score,
+				ranking.Data[dataLen-1].Score-ranking.Data[dataLen-2].Score))
 		} else if dataLen > 0 {
 			rankingsData = append(rankingsData, fmt.Sprintf("%s%d位:  %d",
 				prefixEmoji,
 				ranking.Rank,
-				ranking.Data[dataLen].Score))
+				ranking.Data[dataLen-1].Score))
 		}
 	}
 	output += strings.Join(rankingsData, "\n")
