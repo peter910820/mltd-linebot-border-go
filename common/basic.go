@@ -5,4 +5,6 @@ import "errors"
 var (
 	// The remote server returns a non-200 response status code
 	ErrStatusCodeAbnormal = errors.New("response: server returned an error status code")
+	// MLTD log type error
+	ErrMLTDLogTypeAbnormal = errors.New("mltd: log type error")
 )
